@@ -352,6 +352,20 @@
             <button id="addAccountBtn" style="margin: 2rem 1rem 0.5rem 1.5rem; padding: 0.5rem 1.5rem; font-size: 1rem; background: var(--button-bg); color: var(--button-text); border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">Add Account</button>
             <button id="quickBalanceBtn" title="Quickly update the balances for all your accounts from one place." style="margin: 2rem 1rem 0.5rem 0; padding: 0.5rem 1.5rem; font-size: 1rem; background: #2196f3; color: #fff; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">Quick Balance Update</button>
             <a href="https://joshdisciple.github.io/Custom-Income-Portfolio-Tool/#overview" target="_blank" title="Open the Custom Income Portfolio Tool to build and analyze your own income portfolio." style="margin: 2rem 1rem 0.5rem 0; padding: 0.5rem 1.5rem; font-size: 1rem; background: #4caf50; color: #fff; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.04); text-decoration: none; display: inline-block;">Go to Custom Income Portfolio Tool</a>
+            <button id="portfolioSummaryBtn" style="margin: 2rem 1rem 0.5rem 0; padding: 0.5rem 1.5rem; font-size: 1rem; background: #ff9800; color: #fff; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">Portfolio Summaries</button>
+            <div id="portfolioSummaryModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.18); z-index:9999; align-items:center; justify-content:center;">
+                <div style="background:var(--header-bg); color:var(--header-text); padding:2rem 1.5rem; border-radius:12px; box-shadow:0 4px 24px rgba(0,0,0,0.12); min-width:400px; max-width:90vw; display:flex; flex-direction:column; align-items:center; gap:1.2rem;">
+                    <div style="font-size:1.2rem; font-weight:600; margin-bottom:1rem;">Portfolio Summaries</div>
+                    <textarea id="portfolioSummaryText" style="width:350px; height:220px; padding:1rem; font-size:1rem; border-radius:8px; border:1px solid #ccc; background:var(--button-bg); color:var(--button-text); resize:vertical;"></textarea>
+                    <div style="width:100%; display:flex; gap:1rem; justify-content:center; margin-bottom:0.5rem;">
+                        <select id="portfolioSummarySelect" style="flex:1; padding:0.5rem; font-size:1rem; border-radius:6px; border:1px solid #ccc;"></select>
+                        <button id="savePortfolioSummaryBtn" style="background:#4caf50; color:#fff; border:none; border-radius:6px; padding:0.5rem 1.2rem; cursor:pointer;">Save</button>
+                        <button id="openPortfolioSummaryBtn" style="background:#2196f3; color:#fff; border:none; border-radius:6px; padding:0.5rem 1.2rem; cursor:pointer;">Open</button>
+                        <button id="deletePortfolioSummaryBtn" style="background:#f44336; color:#fff; border:none; border-radius:6px; padding:0.5rem 1.2rem; cursor:pointer;">Delete</button>
+                        <button id="closePortfolioSummaryBtn" style="background:var(--button-bg); color:var(--button-text); border:none; border-radius:6px; padding:0.5rem 1.2rem; cursor:pointer;">Close</button>
+                    </div>
+                </div>
+            </div>
             <div id="addAccountModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.18); z-index:200; align-items:center; justify-content:center;">
                 <form id="accountForm" style="background:var(--header-bg); color:var(--header-text); padding:2rem; border-radius:12px; box-shadow:0 4px 24px rgba(0,0,0,0.12); min-width:320px; display:flex; flex-direction:column; gap:1rem;">
                     <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
@@ -612,6 +626,75 @@
         if (typeof renderProjectedSummary === 'function') renderProjectedSummary();
         if (typeof renderAccountsGrid === 'function') renderAccountsGrid();
     };
+        // Portfolio Summary Modal Logic
+        const portfolioSummaryBtn = document.getElementById('portfolioSummaryBtn');
+        const portfolioSummaryModal = document.getElementById('portfolioSummaryModal');
+        const portfolioSummaryText = document.getElementById('portfolioSummaryText');
+        const portfolioSummarySelect = document.getElementById('portfolioSummarySelect');
+        const savePortfolioSummaryBtn = document.getElementById('savePortfolioSummaryBtn');
+        const openPortfolioSummaryBtn = document.getElementById('openPortfolioSummaryBtn');
+        const deletePortfolioSummaryBtn = document.getElementById('deletePortfolioSummaryBtn');
+        const closePortfolioSummaryBtn = document.getElementById('closePortfolioSummaryBtn');
+
+        function getPortfolioSummaries() {
+            return JSON.parse(localStorage.getItem('portfolioSummaries') || '{}');
+        }
+        function setPortfolioSummaries(summaries) {
+            localStorage.setItem('portfolioSummaries', JSON.stringify(summaries));
+        }
+        function refreshPortfolioSummarySelect() {
+            const summaries = getPortfolioSummaries();
+            portfolioSummarySelect.innerHTML = '<option value="">(New Summary)</option>' +
+                Object.keys(summaries).map(name => `<option value="${name}">${name}</option>`).join('');
+        }
+        portfolioSummaryBtn.onclick = () => {
+            portfolioSummaryModal.style.display = 'flex';
+            refreshPortfolioSummarySelect();
+            portfolioSummaryText.value = '';
+            portfolioSummarySelect.value = '';
+        };
+        closePortfolioSummaryBtn.onclick = () => {
+            portfolioSummaryModal.style.display = 'none';
+        };
+        savePortfolioSummaryBtn.onclick = () => {
+            let name = portfolioSummarySelect.value;
+            if (!name) {
+                name = prompt('Enter a name for this summary:');
+                if (!name) return;
+            }
+            const summaries = getPortfolioSummaries();
+            summaries[name] = portfolioSummaryText.value;
+            setPortfolioSummaries(summaries);
+            refreshPortfolioSummarySelect();
+            portfolioSummarySelect.value = name;
+            alert('Summary saved!');
+        };
+        openPortfolioSummaryBtn.onclick = () => {
+            const name = portfolioSummarySelect.value;
+            if (!name) return;
+            const summaries = getPortfolioSummaries();
+            portfolioSummaryText.value = summaries[name] || '';
+        };
+        deletePortfolioSummaryBtn.onclick = () => {
+            const name = portfolioSummarySelect.value;
+            if (!name) return;
+            if (!confirm('Delete this summary?')) return;
+            const summaries = getPortfolioSummaries();
+            delete summaries[name];
+            setPortfolioSummaries(summaries);
+            refreshPortfolioSummarySelect();
+            portfolioSummaryText.value = '';
+            portfolioSummarySelect.value = '';
+        };
+        portfolioSummarySelect.onchange = () => {
+            const name = portfolioSummarySelect.value;
+            if (!name) {
+                portfolioSummaryText.value = '';
+            } else {
+                const summaries = getPortfolioSummaries();
+                portfolioSummaryText.value = summaries[name] || '';
+            }
+        };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script>
@@ -946,7 +1029,7 @@
                         const cat = btn.getAttribute('data-collapse-cat');
                         let collapsedCats = JSON.parse(localStorage.getItem('collapsedCategories') || '[]');
                         if (collapsedCats.includes(cat)) {
-                            collapsedCats = collapsedats.filter(c => c !== cat);
+                            collapsedCats = collapsedCats.filter(c => c !== cat);
                         } else {
                             collapsedCats.push(cat);
                         }
