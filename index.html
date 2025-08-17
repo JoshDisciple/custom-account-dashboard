@@ -352,10 +352,10 @@
             <button id="addAccountBtn" style="margin: 2rem 1rem 0.5rem 1.5rem; padding: 0.5rem 1.5rem; font-size: 1rem; background: var(--button-bg); color: var(--button-text); border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">Add Account</button>
             <button id="quickBalanceBtn" title="Quickly update the balances for all your accounts from one place." style="margin: 2rem 1rem 0.5rem 0; padding: 0.5rem 1.5rem; font-size: 1rem; background: #2196f3; color: #fff; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">Quick Balance Update</button>
             <a href="https://joshdisciple.github.io/Custom-Income-Portfolio-Tool/#overview" target="_blank" title="Open the Custom Income Portfolio Tool to build and analyze your own income portfolio." style="margin: 2rem 1rem 0.5rem 0; padding: 0.5rem 1.5rem; font-size: 1rem; background: #4caf50; color: #fff; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.04); text-decoration: none; display: inline-block;">Go to Custom Income Portfolio Tool</a>
-            <button id="portfolioSummaryBtn" style="margin: 2rem 1rem 0.5rem 0; padding: 0.5rem 1.5rem; font-size: 1rem; background: #ff9800; color: #fff; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">Portfolio Summaries</button>
+            <button id="portfolioSummaryBtn" style="margin: 2rem 1rem 0.5rem 0; padding: 0.5rem 1.5rem; font-size: 1rem; background: #ff9800; color: #fff; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">Notes</button>
             <div id="portfolioSummaryModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.18); z-index:9999; align-items:center; justify-content:center;">
                 <div style="background:var(--header-bg); color:var(--header-text); padding:2rem 1.5rem; border-radius:12px; box-shadow:0 4px 24px rgba(0,0,0,0.12); min-width:400px; max-width:90vw; display:flex; flex-direction:column; align-items:center; gap:1.2rem;">
-                    <div style="font-size:1.2rem; font-weight:600; margin-bottom:1rem;">Portfolio Summaries</div>
+                    <div style="font-size:1.2rem; font-weight:600; margin-bottom:1rem;">Notes</div>
                     <textarea id="portfolioSummaryText" style="width:350px; height:220px; padding:1rem; font-size:1rem; border-radius:8px; border:1px solid #ccc; background:var(--button-bg); color:var(--button-text); resize:vertical;"></textarea>
                     <div style="width:100%; display:flex; gap:1rem; justify-content:center; margin-bottom:0.5rem;">
                         <select id="portfolioSummarySelect" style="flex:1; padding:0.5rem; font-size:1rem; border-radius:6px; border:1px solid #ccc;"></select>
@@ -626,7 +626,7 @@
         if (typeof renderProjectedSummary === 'function') renderProjectedSummary();
         if (typeof renderAccountsGrid === 'function') renderAccountsGrid();
     };
-        // Portfolio Summary Modal Logic
+        // Notes Modal Logic
         const portfolioSummaryBtn = document.getElementById('portfolioSummaryBtn');
         const portfolioSummaryModal = document.getElementById('portfolioSummaryModal');
         const portfolioSummaryText = document.getElementById('portfolioSummaryText');
@@ -644,7 +644,7 @@
         }
         function refreshPortfolioSummarySelect() {
             const summaries = getPortfolioSummaries();
-            portfolioSummarySelect.innerHTML = '<option value="">(New Summary)</option>' +
+            portfolioSummarySelect.innerHTML = '<option value="">(New Note)</option>' +
                 Object.keys(summaries).map(name => `<option value="${name}">${name}</option>`).join('');
         }
         portfolioSummaryBtn.onclick = () => {
@@ -1029,7 +1029,7 @@
                         const cat = btn.getAttribute('data-collapse-cat');
                         let collapsedCats = JSON.parse(localStorage.getItem('collapsedCategories') || '[]');
                         if (collapsedCats.includes(cat)) {
-                            collapsedCats = collapsedCats.filter(c => c !== cat);
+                            collapsedCats = collapsedats.filter(c => c !== cat);
                         } else {
                             collapsedCats.push(cat);
                         }
